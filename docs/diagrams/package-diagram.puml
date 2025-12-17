@@ -1,4 +1,4 @@
-@startuml
+@startuml PackageDiagram
 
 package "Camada de Apresentação" {
     component "Rotas da API" as API
