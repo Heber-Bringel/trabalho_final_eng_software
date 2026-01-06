@@ -48,19 +48,6 @@ export function recipesRoutes(service: IRecipeService) {
     }
   })
 
-  router.post("/shopping-list", async (req, res, next) => {
-    try {
-      const { recipeIds } = req.body;
-      if (!Array.isArray(recipeIds) || recipeIds.length === 0) {
-        return res.status(400).json({ error: "recipeIds deve ser um array não vazio" });
-      }
-      const result = await service.consolidateShoppingList(recipeIds);
-      res.json(result);
-    } catch (err) {
-      next(err);
-    }
-  });
-
   router.put("/:id", async (req, res, next) => {
     try {
       const item = await service.update(req.params.id, {
