@@ -92,7 +92,6 @@ Ingredientes
 - `DELETE /ingredients/:id` — remove
 
 Receitas
-Receitas
 - `GET /recipes?categoryId=&search=` — lista com filtros (retorna apenas receitas com `status=published`)
 - `GET /recipes?recipeIds=<id1,id2,...>` — quando `recipeIds` é fornecido retorna uma lista de compras consolidada agrupando ingredientes por ingrediente+unidade (formato: `{ name, unit, quantity }`).
 - `GET /recipes/:id` — detalhe

@@ -31,4 +31,5 @@ export type CreateRecipeInput = {
   steps: string[]
   servings: number
   categoryId: string
+  status?: RecipeStatus;
 }
