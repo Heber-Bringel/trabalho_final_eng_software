@@ -68,6 +68,7 @@ export function recipesRoutes(service: IRecipeService) {
         steps: req.body.steps,
         servings: req.body.servings,
         categoryId: req.body.categoryId,
+        status: req.body.status
       })
       res.json(item)
     } catch (error) {

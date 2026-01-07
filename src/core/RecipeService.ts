@@ -8,21 +8,21 @@ import { IRecipeService } from "./interfaces/IRecipeService.js"
 export class RecipeService implements IRecipeService {
   async scaleRecipe(id: string, servings: number): Promise<Recipe> {
     if (!(servings > 0)) throw new Error("Servings must be greater than 0");
-  const recipe = await this.get(id);
-  if (!recipe) throw new Error("Recipe not found");
+    const recipe = await this.get(id);
+    if (!recipe) throw new Error("Recipe not found");
 
-  const factor = servings / recipe.servings;
+    const factor = servings / recipe.servings;
 
-  // Cria uma nova receita escalonada (não altera a original)
-  return {
-    ...recipe,
-    servings,
-    ingredients: recipe.ingredients.map(ing => ({
-      ...ing,
-      quantity: ing.quantity * factor
-    })),
-    createdAt: new Date()
-  };
+    // Cria uma nova receita escalonada (não altera a original)
+    return {
+      ...recipe,
+      servings,
+      ingredients: recipe.ingredients.map(ing => ({
+        ...ing,
+        quantity: ing.quantity * factor
+      })),
+      createdAt: new Date()
+    };
   }
 
   private categoryService = new CategoryService()
@@ -43,7 +43,7 @@ export class RecipeService implements IRecipeService {
     let items = [...store.recipes]
 
     items = items.filter(recipe => recipe.status === 'published')
-    
+
     if (categoryId) {
       items = items.filter(r => r.categoryId === categoryId)
     }
@@ -52,7 +52,7 @@ export class RecipeService implements IRecipeService {
       const searchQuery = filter.search.trim().toLowerCase()
       const allIngredients = await this.ingredientService.list()
       const nameById = new Map(allIngredients.map((ing) => [ing.id, ing.name.toLowerCase()]))
-      
+
       items = items.filter((recipe) => {
         if (recipe.title.toLowerCase().includes(searchQuery)) return true
         if (recipe.description && recipe.description.toLowerCase().includes(searchQuery)) return true
@@ -82,10 +82,10 @@ export class RecipeService implements IRecipeService {
     // Process Ingredients
     const incoming = Array.isArray(input.ingredients)
       ? input.ingredients.map((i) => ({
-          name: String(i.name ?? "").trim(),
-          quantity: Number(i.quantity ?? 0),
-          unit: String(i.unit ?? "").trim(),
-        }))
+        name: String(i.name ?? "").trim(),
+        quantity: Number(i.quantity ?? 0),
+        unit: String(i.unit ?? "").trim(),
+      }))
       : []
 
     if (incoming.length === 0) throw new Error("Ingredients are required")
@@ -104,7 +104,7 @@ export class RecipeService implements IRecipeService {
     }
 
     const steps = Array.isArray(input.steps) ? input.steps.map((s) => String(s)) : []
-    
+
     const servings = Number(input.servings)
     if (!(servings > 0)) throw new Error("Servings must be greater than 0")
 
@@ -133,6 +133,10 @@ export class RecipeService implements IRecipeService {
     }
 
     const updated = { ...current }
+
+    if (data.status !== undefined) {
+      updated.status = data.status
+    }
 
     if (data.categoryId) {
       const category = await this.categoryService.get(data.categoryId).catch(() => null)
@@ -163,10 +167,10 @@ export class RecipeService implements IRecipeService {
     if (data.ingredients !== undefined) {
       const incoming = Array.isArray(data.ingredients)
         ? data.ingredients.map((i) => ({
-            name: String(i.name ?? "").trim(),
-            quantity: Number(i.quantity ?? 0),
-            unit: String(i.unit ?? "").trim(),
-          }))
+          name: String(i.name ?? "").trim(),
+          quantity: Number(i.quantity ?? 0),
+          unit: String(i.unit ?? "").trim(),
+        }))
         : []
 
       incoming.forEach((i) => {
@@ -195,22 +199,22 @@ export class RecipeService implements IRecipeService {
     const recipe = store.recipes[idx]
 
     if (recipe.status === 'published') {
-    throw new Error("Published recipes cannot be deleted. They must be archived.")
+      throw new Error("Published recipes cannot be deleted. They must be archived.")
     }
 
-  store.recipes.splice(idx, 1)
-}
+    store.recipes.splice(idx, 1)
+  }
   async consolidateShoppingList(recipeIds: string[]): Promise<Array<{ name: string; unit: string; quantity: number }>> {
-    
+
     // Search Recipe
 
     const findRecipesById = await Promise.all(recipeIds.map((id) => this.get(id)));
-    
+
     const allIngredients = await this.ingredientService.list();
-    const nameById = new Map(allIngredients.map((ing) => [ing.id, ing.name]));  
+    const nameById = new Map(allIngredients.map((ing) => [ing.id, ing.name]));
 
     // Consolidate Recipes
-    const consolidated = new Map<string, { name : string; unit : string, quantity : number}>();
+    const consolidated = new Map<string, { name: string; unit: string, quantity: number }>();
 
     for (const recipe of findRecipesById) {
       for (const ing of recipe.ingredients) {
@@ -220,7 +224,7 @@ export class RecipeService implements IRecipeService {
         if (consolidated.has(key)) {
           consolidated.get(key)!.quantity += ing.quantity;
         } else {
-          consolidated.set(key, { name, unit : ing.unit, quantity : ing.quantity});
+          consolidated.set(key, { name, unit: ing.unit, quantity: ing.quantity });
         }
       }
     }
